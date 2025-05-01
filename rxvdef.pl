@@ -2,59 +2,84 @@
 
 package rxvdef;
 
-our %instr = (
+our %instruction = (
     brzr => {
-             opcode => 0b0000,
-             type => 'r'
+             type => 'r',
+             opcode => 0b0000
             },
     ji   => {
-             opcode => 0b0001,
-             type => 'r'
+             type => 'i',
+             opcode => 0b0001
             },
     ld   => {
-             opcode => 0b0010,
-             type => 'r'
+             type => 'r',
+             opcode => 0b0010
             },
     st   => {
-             opcode => 0b0011,
-             type => 'r'
+             type => 'r',
+             opcode => 0b0011
             },
     addi => {
-             opcode => 0b0100,
-             type => 'r'
+             type => 'i',
+             opcode => 0b0100
             },
     not  => {
-             opcode => 0b1000,
-             type => 'r'
+             type => 'r',
+             opcode => 0b1000
             },
     and  => {
-             opcode => 0b1001,
-             type => 'r'
+             type => 'r',
+             opcode => 0b1001
             },
     or   => {
-             opcode => 0b1010,
-             type => 'r'
+             type => 'r',
+             opcode => 0b1010
             },
     xor  => {
-             opcode => 0b1011,
-             type => 'r'
+             type => 'r',
+             opcode => 0b1011
             },
     add  => {
-             opcode => 0b1100,
-             type => 'r'
+             type => 'r',
+             opcode => 0b1100
             },
     sub  => {
-             opcode => 0b1101,
-             type => 'r'
+             type => 'r',
+             opcode => 0b1101
             },
     slr  => {
-             opcode => 0b1110,
-             type => 'r'
+             type => 'r',
+             opcode => 0b1110
             },
     srr  => {
-             opcode => 0b1111,
-             type => 'r'
+             type => 'r',
+             opcode => 0b1111
             }
+);
+
+our %directive = (
+    bits8   => {
+                type => 'bits',
+                bytes_per_op => 1
+               },
+    bits16  => {
+                type => 'bits',
+                bytes_per_op => 2
+               },
+    bits32  => {
+                type => 'bits',
+                bytes_per_op => 4
+               },
+    bits64  => {
+                type => 'bits',
+                bytes_per_op => 8
+               },
+    space   => {
+                type => 'space'
+               },
+    include => {
+                type => 'include'
+               }
 );
 
 1;
