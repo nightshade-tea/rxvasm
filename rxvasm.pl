@@ -26,3 +26,13 @@ sub parse_r {
 
     return ($op, $ra, $rb);
 }
+
+# parses an i-format instruction string and returns (op, imm)
+sub parse_i {
+    my $instr = shift or die "no instruction provided\n";
+
+    my ($op, $imm) = $instr =~ /([a-z]{2,4})\s+(-?\w+)/
+        or die "invalid instruction format: $instr\n";
+
+    return ($op, $imm);
+}
