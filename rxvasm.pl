@@ -16,3 +16,13 @@ my %opcode = (
     slr  => 0b1110,
     srr  => 0b1111
 );
+
+# parses an r-format instruction string and returns (op, ra, rb)
+sub parse_r {
+    my $instr = shift or die "no instruction provided\n";
+
+    my ($op, $ra, $rb) = $instr =~ /([a-z]{2,4})\s+(r[0-3]),\s+(r[0-3])/
+        or die "invalid instruction format: $instr\n";
+
+    return ($op, $ra, $rb);
+}
