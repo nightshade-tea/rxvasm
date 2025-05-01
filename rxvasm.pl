@@ -19,20 +19,16 @@ my %opcode = (
 
 # parses an r-format instruction string and returns (op, ra, rb)
 sub parse_r {
-    my $instr = shift or die "no instruction provided\n";
+    my $instr = shift or die;
 
-    my ($op, $ra, $rb) = $instr =~ /([a-z]{2,4})\s+(r[0-3]),\s+(r[0-3])/
-        or die "invalid instruction format: $instr\n";
-
-    return ($op, $ra, $rb);
+    return ($instr =~ /([a-z]{2,4})\s+(r[0-3]),\s+(r[0-3])/
+        or die "invalid instruction format: $instr\n");
 }
 
 # parses an i-format instruction string and returns (op, imm)
 sub parse_i {
-    my $instr = shift or die "no instruction provided\n";
+    my $instr = shift or die;
 
-    my ($op, $imm) = $instr =~ /([a-z]{2,4})\s+(-?\w+)/
-        or die "invalid instruction format: $instr\n";
-
-    return ($op, $imm);
+    return ($instr =~ /([a-z]{2,4})\s+(-?\w+)/
+        or die "invalid instruction format: $instr\n");
 }
