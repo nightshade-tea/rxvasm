@@ -119,6 +119,9 @@ die "usage: perl rxvasm.pl <program.s> <out.bin>" if @ARGV != 2;
 open my $in, "<", $ARGV[0] or die "Failed to open $ARGV[0]: $!";
 
 my $program = read_program($in);
+
+close $in;
+
 my ($instructions, $label) = extract_labels($program);
 
 my @binary;
@@ -134,6 +137,10 @@ foreach (@$instructions) {
     push @binary, @{encode_dir($_)} if (/^\.\w+/);
 }
 
+open my $out, '>:raw', $ARGV[1] or die "Failed to open $ARGV[1]: $!";
+print $out pack 'C*', @binary;
+close $out;
+
 # debug
 print "\@instructions:\n";
 print "$_\n" foreach (@$instructions);
@@ -143,5 +150,3 @@ print "label=$_ addr=$label->{$_}\n" foreach (sort keys %$label);
 
 print "\n\@binary:\n";
 printf "%08b\n", $_ foreach (@binary);
-
-close $in;
