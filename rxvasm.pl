@@ -5,21 +5,41 @@ use warnings;
 
 require './rxvdef.pl' or die "Failed to load rxvdef.pl: $@ $!";
 
-# parses an r-format instruction string and returns (op, ra, rb)
-sub parse_r {
+# encodes an r-format instruction string and returns the machine code byte
+sub encode_r {
     my $instr = shift or return;
-    my ($op, $ra, $rb) = $instr =~ /([a-z]{2,4})\s+(r[0-3]),\s+(r[0-3])/;
 
-    return ($op, $ra, $rb);
+    my ($op, $ra, $rb) = $instr =~ /([a-z]{2,4})\s+r([0-3]),\s+r([0-3])/;
+    my $byte = ($rxvdef::instruction{$op} << 4) | ($ra << 2) | $rb;
+
+    return $byte;
 }
 
-# parses an i-format instruction string and returns (op, imm)
-sub parse_i {
+# encodes an i-format instruction string and returns the machine code byte. the
+# label mapping and current address need to be passed as parameters
+sub encode_i {
     my $instr = shift or return;
+    my $label = shift or return;
+    my $addr = shift or return;
+
     my ($op, $imm) = $instr =~ /([a-z]{2,4})\s+(-?\w+)/;
 
-    return ($op, $imm);
+    if (defined $label->{$imm}) {
+        $imm = $label->{$imm} - $addr; # jumps are relative
+    }
+
+    else {
+        $imm += 0;
+    }
+
+    $imm &= 0xf; # mask to 4 bits
+
+    my $byte = ($rxvdef::instruction{$op} << 4) | $imm;
+
+    return $byte;
 }
+
+# TODO: encode_dir
 
 # reads from a file handle, strips comments, excess whitespace and empty lines,
 # then returns a reference to an array of the resulting program lines
@@ -86,9 +106,13 @@ my ($instructions, $label) = extract_labels($program);
 
 my @binary;
 
+# TODO ...
+
 # debug
 print "\@instructions:\n";
 print "$_\n" foreach (@$instructions);
 
 print "\n\%label:\n";
 print "label=$_ addr=$label->{$_}\n" foreach (sort keys %$label);
+
+close $in;
