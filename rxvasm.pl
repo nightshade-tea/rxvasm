@@ -21,6 +21,23 @@ sub parse_i {
     return ($op, $imm);
 }
 
+# reads from a file handle, strips comments, excess whitespace and empty lines,
+# then returns a reference to an array of the resulting program lines
+sub read_program {
+    my $in = shift or return;
+    my @program;
+
+    while (<$in>) {
+        chomp;
+        s/^\s+|\s+$//g; # trim whitespaces
+        s/\s*;.*$//; # strip comments
+        next if /^$/; # skip empty lines
+        push @program, $_;
+    }
+
+    return \@program;
+}
+
 # given a trimmed and stripped line (no labels or comments), returns the size
 # in bytes that the instruction or directive needs to be written to the binary
 sub mem_size {
@@ -40,38 +57,38 @@ sub mem_size {
     return 0;
 }
 
+# strip labels from \@program and map them to their addresses. returns the
+# references to the stripped program and to the labels map
+sub extract_labels {
+    my $program = shift or return;
+    my @instructions;
+    my %label;
+    my $addr = 0;
+
+    foreach (@$program) {
+        $label{$1} = $addr if (s/^(\w+):\s*//);
+
+        unless (/^$/) {
+            push @instructions, $_;
+            $addr += mem_size($_);
+        }
+    }
+
+    return (\@instructions, \%label);
+}
+
 die "usage: perl rxvasm.pl <program.s> <out.bin>" if @ARGV != 2;
 
 open my $in, "<", $ARGV[0] or die "Failed to open $ARGV[0]: $!";
 
-my @program;
-
-while (<$in>) {
-    chomp;
-    s/^\s+|\s+$//g; # trim whitespaces
-    s/\s*;.*$//; # strip comments
-    next if /^$/; # skip empty lines
-    push @program, $_;
-}
-
-my @instructions;
-my %label;
-my $addr = 0;
-
-foreach (@program) {
-    $label{$1} = $addr if (s/^(\w+):\s*//);
-
-    unless (/^$/) {
-        push @instructions, $_;
-        $addr += mem_size($_);
-    }
-}
+my $program = read_program($in);
+my ($instructions, $label) = extract_labels($program);
 
 my @binary;
 
 # debug
 print "\@instructions:\n";
-print "$_\n" foreach (@instructions);
+print "$_\n" foreach (@$instructions);
 
 print "\n\%label:\n";
-print "label=$_ addr=$label{$_}\n" foreach (keys %label);
+print "label=$_ addr=$label->{$_}\n" foreach (sort keys %$label);
