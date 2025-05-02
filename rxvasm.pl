@@ -10,7 +10,7 @@ sub encode_r {
     my ($instr) = @_;
 
     my ($op, $ra, $rb) = $instr =~ /([a-z]{2,4})\s+r([0-3]),\s+r([0-3])/;
-    my $byte = ($rxvdef::instruction{$op} << 4) | ($ra << 2) | $rb;
+    my $byte = ($rxvdef::instruction{$op}{opcode} << 4) | ($ra << 2) | $rb;
 
     return $byte;
 }
@@ -28,7 +28,7 @@ sub encode_i {
 
     $imm &= 0xf; # mask to 4 bits
 
-    my $byte = ($rxvdef::instruction{$op} << 4) | $imm;
+    my $byte = ($rxvdef::instruction{$op}{opcode} << 4) | $imm;
 
     return $byte;
 }
@@ -123,7 +123,16 @@ my ($instructions, $label) = extract_labels($program);
 
 my @binary;
 
-# TODO ...
+foreach (@$instructions) {
+    if (/^([a-z]{2,4})/) {
+        push @binary, encode_r($_) if $rxvdef::instruction{$1}{type} eq 'r';
+        push @binary, encode_i($_, $label, scalar @binary)
+            if $rxvdef::instruction{$1}{type} eq 'i';
+        next;
+    }
+
+    push @binary, @{encode_dir($_)} if (/^\.\w+/);
+}
 
 # debug
 print "\@instructions:\n";
@@ -131,5 +140,8 @@ print "$_\n" foreach (@$instructions);
 
 print "\n\%label:\n";
 print "label=$_ addr=$label->{$_}\n" foreach (sort keys %$label);
+
+print "\n\@binary:\n";
+printf "%08b\n", $_ foreach (@binary);
 
 close $in;
