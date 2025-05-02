@@ -7,7 +7,7 @@ require './rxvdef.pl' or die "Failed to load rxvdef.pl: $@ $!";
 
 # encodes an r-format instruction string and returns the machine code byte
 sub encode_r {
-    my $instr = shift or return;
+    my ($instr) = @_;
 
     my ($op, $ra, $rb) = $instr =~ /([a-z]{2,4})\s+r([0-3]),\s+r([0-3])/;
     my $byte = ($rxvdef::instruction{$op} << 4) | ($ra << 2) | $rb;
@@ -18,9 +18,7 @@ sub encode_r {
 # encodes an i-format instruction string and returns the machine code byte. the
 # label mapping and current address need to be passed as parameters
 sub encode_i {
-    my $instr = shift or return;
-    my $label = shift or return;
-    my $addr = shift or return;
+    my ($instr, $label, $addr) = @_;
 
     my ($op, $imm) = $instr =~ /([a-z]{2,4})\s+(-?\w+)/;
 
@@ -39,15 +37,18 @@ sub encode_i {
     return $byte;
 }
 
-# TODO: encode_dir
+sub encode_dir {
+    my $dir = @_;
+}
 
 # reads from a file handle, strips comments, excess whitespace and empty lines,
 # then returns a reference to an array of the resulting program lines
 sub read_program {
-    my $in = shift or return;
+    my ($file) = @_;
+
     my @program;
 
-    while (<$in>) {
+    while (<$file>) {
         chomp;
         s/^\s+|\s+$//g; # trim whitespaces
         s/\s*;.*$//; # strip comments
@@ -61,7 +62,8 @@ sub read_program {
 # given a trimmed and stripped line (no labels or comments), returns the size
 # in bytes that the instruction or directive needs to be written to the binary
 sub mem_size {
-    my $line = shift or return;
+    my ($line) = @_;
+
     my ($dir) = $line =~ /^\.(\w+)/ or return 1;
 
     if ($rxvdef::directive{$dir}{type} eq 'bits') {
@@ -80,7 +82,8 @@ sub mem_size {
 # strip labels from \@program and map them to their addresses. returns the
 # references to the stripped program and to the labels map
 sub extract_labels {
-    my $program = shift or return;
+    my ($program) = @_;
+
     my @instructions;
     my %label;
     my $addr = 0;
