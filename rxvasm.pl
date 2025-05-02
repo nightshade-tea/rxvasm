@@ -69,12 +69,9 @@ foreach (@program) {
 
 my @binary;
 
+# debug
+print "\@instructions:\n";
 print "$_\n" foreach (@instructions);
 
-foreach (sort keys %label) {
-    print "label=";
-    print;
-    print " addr=";
-    print $label{$_};
-    print "\n";
-}
+print "\n\%label:\n";
+print "label=$_ addr=$label{$_}\n" foreach (keys %label);
