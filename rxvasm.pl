@@ -59,16 +59,11 @@ my %label;
 my $addr = 0;
 
 foreach (@program) {
-    my $l;
-
-    if (s/^(\w+):\s*//) {
-        $l = $1;
-        $label{$l} = $addr;
-    }
+    $label{$1} = $addr if (s/^(\w+):\s*//);
 
     unless (/^$/) {
         push @instructions, $_;
-        $addr++;
+        $addr += mem_size($_);
     }
 }
 
