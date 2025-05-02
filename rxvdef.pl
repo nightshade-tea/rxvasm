@@ -57,29 +57,30 @@ our %instruction = (
             }
 );
 
+# commented-out directives may be implemented in the future
 our %directive = (
     bits8   => {
                 type => 'bits',
                 bytes_per_op => 1
                },
-    bits16  => {
-                type => 'bits',
-                bytes_per_op => 2
-               },
-    bits32  => {
-                type => 'bits',
-                bytes_per_op => 4
-               },
-    bits64  => {
-                type => 'bits',
-                bytes_per_op => 8
-               },
+#   bits16  => {
+#               type => 'bits',
+#               bytes_per_op => 2
+#              },
+#   bits32  => {
+#               type => 'bits',
+#               bytes_per_op => 4
+#              },
+#   bits64  => {
+#               type => 'bits',
+#               bytes_per_op => 8
+#              },
     space   => {
                 type => 'space'
                },
-    include => {
-                type => 'include'
-               }
+#   include => {
+#               type => 'include'
+#              }
 );
 
 1;
