@@ -3,57 +3,10 @@
 use strict;
 use warnings;
 
+# TODO: array of imports, iterate requiring
+
 require './rxvdef.pl' or die "Failed to load rxvdef.pl: $@ $!";
-
-# encodes an r-format instruction string and returns the machine code byte
-sub encode_r {
-    my ($instr) = @_;
-
-    my ($op, $ra, $rb) = $instr =~ /([a-z]{2,4})\s+r([0-3]),\s+r([0-3])/;
-    my $byte = ($rxvdef::instruction{$op}{opcode} << 4) | ($ra << 2) | $rb;
-
-    return $byte;
-}
-
-# encodes an i-format instruction string and returns the machine code byte. a
-# label mapping and current address need to be passed as parameters
-sub encode_i {
-    my ($instr, $label, $addr) = @_;
-
-    my ($op, $imm) = $instr =~ /([a-z]{2,4})\s+(-?\w+)/;
-
-    if (defined $label->{$imm}) {
-        $imm = $label->{$imm} - $addr; # jumps are relative
-    }
-
-    $imm &= 0xf; # mask to 4 bits
-
-    my $byte = ($rxvdef::instruction{$op}{opcode} << 4) | $imm;
-
-    return $byte;
-}
-
-# encodes a directive and returns an arrayref to @bytes
-sub encode_dir {
-    my ($line) = @_;
-
-    my ($dir) = $line =~ /^\.(\w+)/ or return;
-
-    if ($rxvdef::directive{$dir}{type} eq 'bits') {
-        my @ops = split /\s+/, $line;
-        shift @ops; # drop .bitsx
-        my @bytes = map { $_ & 0xff } @ops;
-
-        return \@bytes;
-    }
-
-    elsif ($rxvdef::directive{$dir}{type} eq 'space') {
-        my ($size) = $line =~ /^\.space\s+(\w+)/;
-        my @bytes = (0) x $size;
-
-        return \@bytes;
-    }
-}
+require './rxvencode.pl' or die "Failed to load rxvencode.pl: $@ $!";
 
 # reads from a file handle, strips comments, excess whitespace and empty lines,
 # then returns a reference to an array of the resulting program lines
@@ -128,13 +81,13 @@ my @binary;
 
 foreach (@$instructions) {
     if (/^([a-z]{2,4})/) {
-        push @binary, encode_r($_) if $rxvdef::instruction{$1}{type} eq 'r';
-        push @binary, encode_i($_, $label, scalar @binary)
+        push @binary, rxvencode::encode_r($_) if $rxvdef::instruction{$1}{type} eq 'r';
+        push @binary, rxvencode::encode_i($_, $label, scalar @binary)
             if $rxvdef::instruction{$1}{type} eq 'i';
         next;
     }
 
-    push @binary, @{encode_dir($_)} if (/^\.\w+/);
+    push @binary, @{rxvencode::encode_dir($_)} if (/^\.\w+/);
 }
 
 open my $out, '>:raw', $ARGV[1] or die "Failed to open $ARGV[1]: $!";
@@ -142,11 +95,11 @@ print $out pack 'C*', @binary;
 close $out;
 
 # debug
-print "\@instructions:\n";
-print "$_\n" foreach (@$instructions);
+#print "\@instructions:\n";
+#print "$_\n" foreach (@$instructions);
 
-print "\n\%label:\n";
-print "label=$_ addr=$label->{$_}\n" foreach (sort keys %$label);
+#print "\n\%label:\n";
+#print "label=$_ addr=$label->{$_}\n" foreach (sort keys %$label);
 
-print "\n\@binary:\n";
-printf "%08b\n", $_ foreach (@binary);
+#print "\n\@binary:\n";
+#printf "%08b\n", $_ foreach (@binary);
