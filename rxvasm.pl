@@ -15,7 +15,7 @@ sub encode_r {
     return $byte;
 }
 
-# encodes an i-format instruction string and returns the machine code byte. the
+# encodes an i-format instruction string and returns the machine code byte. a
 # label mapping and current address need to be passed as parameters
 sub encode_i {
     my ($instr, $label, $addr) = @_;
@@ -26,10 +26,6 @@ sub encode_i {
         $imm = $label->{$imm} - $addr; # jumps are relative
     }
 
-    else {
-        $imm += 0;
-    }
-
     $imm &= 0xf; # mask to 4 bits
 
     my $byte = ($rxvdef::instruction{$op} << 4) | $imm;
@@ -37,8 +33,26 @@ sub encode_i {
     return $byte;
 }
 
+# encodes a directive and returns an arrayref to @bytes
 sub encode_dir {
-    my $dir = @_;
+    my ($line) = @_;
+
+    my ($dir) = $line =~ /^\.(\w+)/ or return;
+
+    if ($rxvdef::directive{$dir}{type} eq 'bits') {
+        my @ops = split /\s+/, $line;
+        shift @ops; # drop .bitsx
+        my @bytes = map { $_ & 0xff } @ops;
+
+        return \@bytes;
+    }
+
+    elsif ($rxvdef::directive{$dir}{type} eq 'space') {
+        my ($size) = $line =~ /^\.space\s+(\w+)/;
+        my @bytes = (0) x $size;
+
+        return \@bytes;
+    }
 }
 
 # reads from a file handle, strips comments, excess whitespace and empty lines,
