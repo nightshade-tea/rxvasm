@@ -4,93 +4,49 @@ package rxvencode;
 
 use strict;
 use warnings;
-use Scalar::Util;
 
-# encodes an r-format instruction string and returns the machine code byte
+require './rxvdef.pl';
+
+# encode an r-type instruction into a byte
 sub encode_r {
-    my ($instr) = @_;
+    my ($op, $ra, $rb) = @_;
 
-    my ($op, $ra, $rb) = $instr =~ /^([a-z]+)\s+r([0-3]),\s+r([0-3])$/;
-
-    # fail fast if $instr isn't a valid r-format instruction
-    die "fatal error: invalid r-format instruction '$instr'\n"
-        unless defined $op;
-
+    # opcode[7:4] | ra[3:2] | rb[1:0]
     my $byte = ($rxvdef::instructions{$op}{opcode} << 4) | ($ra << 2) | $rb;
 
     return $byte;
 }
 
-# encodes an i-format instruction string and returns the machine code byte. a
-# label mapping and current address need to be passed as parameters
+# encode an i-type instruction into a byte
 sub encode_i {
-    my ($instr, $label, $addr) = @_;
+    my ($op, $imm) = @_;
 
-    my ($op, $imm) = $instr =~ /^([a-z]+)\s+(-?\w+)$/;
+    # mask to 4 bits
+    $imm &= 0xf;
 
-    # fail fast if $instr isn't a valid i-format instruction
-    die "fatal error: invalid i-format instruction '$instr'\n"
-        unless defined $op;
-
-    $imm = $label->{$imm} - $addr if defined $label->{$imm};
-
-    die "fatal error: invalid immediate '$imm' in '$instr'\n"
-        unless Scalar::Util::looks_like_number($imm);
-
-    die "fatal error: immediate '$imm' outside of range [-8..7] in '$instr'\n"
-        unless ($imm >= -8 && $imm <= 7);
-
-    $imm &= 0xf; # mask to 4 bits
-
+    # opcode[7:4] | imm[3:0]
     my $byte = ($rxvdef::instructions{$op}{opcode} << 4) | $imm;
 
     return $byte;
 }
 
-# encodes a directive and returns an arrayref to @bytes
-sub encode_dir {
-    my ($line) = @_;
+# encode a bits type directive into bytes
+sub encode_bits {
+    my ($dir, $ops) = @_;
 
-    my ($dir) = $line =~ /^\.(\w+)/ or return;
+    # mask each operand to 8 bits
+    my @bytes = map $_ & 0xff, @$ops;
 
-    if ($rxvdef::directives{$dir}{type} eq 'bits') {
-        my @ops = split /\s+/, $line;
-        shift @ops; # drop .bitsx
+    return \@bytes;
+}
 
-        die "fatal error: directive '$dir' requires at least one operand in "
-            . "'$line'\n" unless @ops;
+# encode a space type directive into zeroed bytes
+sub encode_space {
+    my ($size) = @_;
 
-        my @bytes = map {
+    my @bytes = (0) x $size;
 
-            # ensure it is an integer
-            die "fatal error: invalid operand '$_' in '$line'\n"
-                unless Scalar::Util::looks_like_number($_) && /^-?\w+$/;
-
-            die "fatal error: operand '$_' exceeds 8 bits in '$line'\n"
-                unless ($_ >= -128 && $_ <= 255);
-
-            $_ & 0xff;
-        } @ops;
-
-        return \@bytes;
-    }
-
-    elsif ($rxvdef::directives{$dir}{type} eq 'space') {
-        my ($size) = $line =~ /^\.space\s+(\w+)$/;
-
-        die "fatal error: directive '$dir' requires exactly one operand in "
-            . "'$line'\n" unless defined $size;
-
-
-        die "fatal error: invalid operand '$size' in '$line'\n"
-            unless Scalar::Util::looks_like_number($size)
-                   && $size =~ /^\w+$/
-                   && $size > 0;
-
-        my @bytes = (0) x $size;
-
-        return \@bytes;
-    }
+    return \@bytes;
 }
 
 1;
