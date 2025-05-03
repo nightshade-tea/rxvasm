@@ -2,6 +2,9 @@
 
 package rxvdef;
 
+use strict;
+use warnings;
+
 # if you add more instructions, make sure that their names can be matched by
 # this regex pattern: /[a-z]+/
 

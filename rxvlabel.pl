@@ -2,6 +2,9 @@
 
 package rxvlabel;
 
+use strict;
+use warnings;
+
 # given a trimmed and stripped line (no labels or comments), returns the size
 # in bytes that the instruction or directive needs to be written to the binary
 sub mem_size {

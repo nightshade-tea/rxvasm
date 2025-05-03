@@ -2,6 +2,8 @@
 
 package rxvencode;
 
+use strict;
+use warnings;
 use Scalar::Util;
 
 # encodes an r-format instruction string and returns the machine code byte
