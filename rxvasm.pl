@@ -41,6 +41,10 @@ sub assemble_binary {
         # encode instructions
         if (/^([a-z]+)/) {
 
+            # check if instruction is defined in rxvdef
+            die "fatal error: unknown instruction '$1' in '$_'\n"
+                unless defined $rxvdef::instructions{$1};
+
             # type 'r'
             push @binary, rxvencode::encode_r($_)
                 if $rxvdef::instructions{$1}{type} eq 'r';
@@ -53,7 +57,17 @@ sub assemble_binary {
         }
 
         # encode directives
-        push @binary, @{rxvencode::encode_dir($_)} if (/^\.\w+/);
+        if (/^\.(\w+)/) {
+
+            # disable “used only once” warning for directives hash
+            no warnings 'once';
+
+            # check if directive is defined in rxvdef
+            die "fatal error: unknown directive '$1' in '$_'\n"
+                unless defined $rxvdef::directives{$1};
+
+            push @binary, @{rxvencode::encode_dir($_)};
+        }
     }
 
     # return:
