@@ -22,7 +22,7 @@ sub parse_r {
 
 # parse an i-format instruction into lexical components
 sub parse_i {
-    my ($instr, $label, $addr) = @_;
+    my ($instr, $label_map, $addr) = @_;
 
     # extract mnemonic and immediate
     my ($op, $imm) = $instr =~ /^([a-z]+)\s+(-?\w+)$/;
@@ -32,7 +32,7 @@ sub parse_i {
         unless defined $op;
 
     # resolve label to offset
-    $imm = $label->{$imm} - $addr if defined $label->{$imm};
+    $imm = $label_map->{$imm} - $addr if defined $label_map->{$imm};
 
     # ensure numeric immediate
     die "fatal error: invalid immediate '$imm' in '$instr'\n"
