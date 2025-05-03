@@ -6,7 +6,7 @@ package rxvencode;
 sub encode_r {
     my ($instr) = @_;
 
-    my ($op, $ra, $rb) = $instr =~ /([a-z]{2,4})\s+r([0-3]),\s+r([0-3])/;
+    my ($op, $ra, $rb) = $instr =~ /^([a-z]+)\s+r([0-3]),\s+r([0-3])/;
     my $byte = ($rxvdef::instructions{$op}{opcode} << 4) | ($ra << 2) | $rb;
 
     return $byte;
@@ -17,7 +17,7 @@ sub encode_r {
 sub encode_i {
     my ($instr, $label, $addr) = @_;
 
-    my ($op, $imm) = $instr =~ /([a-z]{2,4})\s+(-?\w+)/;
+    my ($op, $imm) = $instr =~ /^([a-z]+)\s+(-?\w+)/;
 
     if (defined $label->{$imm}) {
         $imm = $label->{$imm} - $addr; # jumps are relative

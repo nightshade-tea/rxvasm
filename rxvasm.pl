@@ -39,7 +39,7 @@ sub assemble_binary {
     foreach (@$stripped_program) {
 
         # encode instructions
-        if (/^([a-z]{2,4})/) {
+        if (/^([a-z]+)/) {
 
             # type 'r'
             push @binary, rxvencode::encode_r($_)
