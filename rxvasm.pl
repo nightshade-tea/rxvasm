@@ -43,11 +43,11 @@ sub assemble_binary {
 
             # type 'r'
             push @binary, rxvencode::encode_r($_)
-                if $rxvdef::instruction{$1}{type} eq 'r';
+                if $rxvdef::instructions{$1}{type} eq 'r';
 
             # type 'i'
             push @binary, rxvencode::encode_i($_, $label_map, scalar @binary)
-                if $rxvdef::instruction{$1}{type} eq 'i';
+                if $rxvdef::instructions{$1}{type} eq 'i';
 
             next;
         }

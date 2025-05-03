@@ -7,7 +7,7 @@ sub encode_r {
     my ($instr) = @_;
 
     my ($op, $ra, $rb) = $instr =~ /([a-z]{2,4})\s+r([0-3]),\s+r([0-3])/;
-    my $byte = ($rxvdef::instruction{$op}{opcode} << 4) | ($ra << 2) | $rb;
+    my $byte = ($rxvdef::instructions{$op}{opcode} << 4) | ($ra << 2) | $rb;
 
     return $byte;
 }
@@ -25,7 +25,7 @@ sub encode_i {
 
     $imm &= 0xf; # mask to 4 bits
 
-    my $byte = ($rxvdef::instruction{$op}{opcode} << 4) | $imm;
+    my $byte = ($rxvdef::instructions{$op}{opcode} << 4) | $imm;
 
     return $byte;
 }
@@ -36,7 +36,7 @@ sub encode_dir {
 
     my ($dir) = $line =~ /^\.(\w+)/ or return;
 
-    if ($rxvdef::directive{$dir}{type} eq 'bits') {
+    if ($rxvdef::directives{$dir}{type} eq 'bits') {
         my @ops = split /\s+/, $line;
         shift @ops; # drop .bitsx
         my @bytes = map { $_ & 0xff } @ops;
@@ -44,7 +44,7 @@ sub encode_dir {
         return \@bytes;
     }
 
-    elsif ($rxvdef::directive{$dir}{type} eq 'space') {
+    elsif ($rxvdef::directives{$dir}{type} eq 'space') {
         my ($size) = $line =~ /^\.space\s+(\w+)/;
         my @bytes = (0) x $size;
 

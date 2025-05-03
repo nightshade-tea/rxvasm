@@ -2,7 +2,12 @@
 
 package rxvdef;
 
-our %instruction = (
+# if you add more instructions, make sure that their names can be matched by
+# this regex pattern: /[a-z]+/
+
+# instruction set definition
+# keys are mnemonics, values define type and opcode
+our %instructions = (
     brzr => {
              type => 'r',
              opcode => 0b0000
@@ -57,11 +62,12 @@ our %instruction = (
             }
 );
 
-# commented-out directives may be implemented in the future
-our %directive = (
+# assembler directive definitions
+# keys are directive names, values define behavior
+our %directives = (
     bits8   => {
-                type => 'bits',
-                bytes_per_op => 1
+                type => 'bits',     # embeds values into memory
+                bytes_per_op => 1   # size allocated for each operand
                },
 #   bits16  => {
 #               type => 'bits',
@@ -76,7 +82,7 @@ our %directive = (
 #               bytes_per_op => 8
 #              },
     space   => {
-                type => 'space'
+                type => 'space'     # allocates zeroed space
                },
 #   include => {
 #               type => 'include'

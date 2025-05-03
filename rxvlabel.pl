@@ -9,12 +9,12 @@ sub mem_size {
 
     my ($dir) = $line =~ /^\.(\w+)/ or return 1;
 
-    if ($rxvdef::directive{$dir}{type} eq 'bits') {
+    if ($rxvdef::directives{$dir}{type} eq 'bits') {
         my @ops = split /\s+/, $line;
-        return (scalar @ops - 1) * $rxvdef::directive{$dir}{bytes_per_op};
+        return (scalar @ops - 1) * $rxvdef::directives{$dir}{bytes_per_op};
     }
 
-    elsif ($rxvdef::directive{$dir}{type} eq 'space') {
+    elsif ($rxvdef::directives{$dir}{type} eq 'space') {
         my ($size) = $line =~ /^\.space\s+(\w+)/;
         return $size;
     }
