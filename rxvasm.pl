@@ -5,8 +5,10 @@
 use strict;
 use warnings;
 
-# import required modules for definitions, encoding, and label extraction
-require $_ foreach ('./rxvdef.pl', './rxvencode.pl', './rxvlabel.pl');
+require './rxvdef.pl';
+require './rxvlabel.pl';
+require './rxvparse.pl';
+require './rxvencode.pl';
 
 # strips comments, excess whitespace and empty lines, then returns an arrayref
 # to the resulting program lines
@@ -26,7 +28,7 @@ sub read_program {
 
     # return:
     # an arrayref to @program, which is an array of instructions, directives
-    # and labels
+    # and possibly labels
     return \@program;
 }
 
@@ -40,7 +42,7 @@ sub assemble_binary {
 
     foreach (@$stripped_program) {
 
-        # encode instructions
+        # parse and encode instructions
         if (/^([a-z]+)/) {
 
             # check if instruction is defined in rxvdef
@@ -48,28 +50,45 @@ sub assemble_binary {
                 unless defined $rxvdef::instructions{$1};
 
             # type 'r'
-            push @binary, rxvencode::encode_r($_)
-                if $rxvdef::instructions{$1}{type} eq 'r';
+            if ($rxvdef::instructions{$1}{type} eq 'r') {
+                my ($op, $ra, $rb) = rxvparse::parse_r($_);
+                push @binary, rxvencode::encode_r($op, $ra, $rb);
+            }
 
             # type 'i'
-            push @binary, rxvencode::encode_i($_, $label_map, scalar @binary)
-                if $rxvdef::instructions{$1}{type} eq 'i';
+            elsif ($rxvdef::instructions{$1}{type} eq 'i') {
+                my ($op, $imm) = rxvparse::parse_i($_, $label_map,
+                                                   scalar @binary);
+                push @binary, rxvencode::encode_i($op, $imm);
+            }
 
             next;
         }
 
-        # encode directives
+        # parse and encode directives
         if (/^\.(\w+)/) {
-
-            # disable “used only once” warning for directives hash
-            no warnings 'once';
 
             # check if directive is defined in rxvdef
             die "fatal error: unknown directive '$1' in '$_'\n"
                 unless defined $rxvdef::directives{$1};
 
-            push @binary, @{rxvencode::encode_dir($_)};
+            # type 'bits'
+            if ($rxvdef::directives{$1}{type} eq 'bits') {
+                my ($dir, $ops) = rxvparse::parse_bits($_);
+                push @binary, @{rxvencode::encode_bits($dir, $ops)};
+            }
+
+            # type 'space'
+            elsif ($rxvdef::directives{$1}{type} eq 'space') {
+                my $size = rxvparse::parse_space($_);
+                push @binary, @{rxvencode::encode_space($size)};
+            }
+
+            next;
         }
+
+        # $_ is neither an instruction nor a directive
+        die "fatal error: invalid construct '$_'\n";
     }
 
     # return:
