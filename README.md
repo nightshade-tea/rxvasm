@@ -21,3 +21,9 @@ por enquanto, o assembler tem suporte às diretivas `.bits8` e `.space` do emula
 ## extensões da isa
 
 novas instruções podem ser adicionadas modificando a hash `%instructions` em `lib/rxvdef.pl`.
+
+## carregando o binário na memória do logisim
+
+load image > binary > little-endian
+
+[imgur](https://imgur.com/a/UyOpz8Y)
