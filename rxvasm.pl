@@ -19,7 +19,7 @@ require 'rxvlabel.pl';
 die "usage: perl rxvasm.pl <program.s> <out.bin>\n" if @ARGV != 2;
 
 # open and read the input file into $program
-open my $in, "<", $ARGV[0] or die "Failed to open $ARGV[0]: $!";
+open my $in, "<", $ARGV[0] or die "Failed to open '$ARGV[0]': $!\n";
 my $program = rxvassemble::read_program($in);
 close $in;
 
@@ -30,6 +30,6 @@ my ($stripped_program, $label_map) = rxvlabel::extract_labels($program);
 my $binary = rxvassemble::assemble_binary($stripped_program, $label_map);
 
 # write the binary to the output file
-open my $out, '>:raw', $ARGV[1] or die "Failed to open $ARGV[1]: $!";
+open my $out, '>:raw', $ARGV[1] or die "Failed to open '$ARGV[1]': $!\n";
 print $out pack 'C*', @$binary;
 close $out;
