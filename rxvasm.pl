@@ -6,8 +6,13 @@ use v5.32;
 use strict;
 use warnings;
 
-require './rxvassemble.pl';
-require './rxvlabel.pl';
+BEGIN {
+    my ($root) = $0 =~ /^(.*)rxvasm.pl$/;
+    push @INC, $root . 'lib';
+}
+
+require 'rxvassemble.pl';
+require 'rxvlabel.pl';
 
 # ensure rxvasm has been called with 2 arguments, otherwise print an usage
 # message

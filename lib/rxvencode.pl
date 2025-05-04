@@ -5,7 +5,7 @@ package rxvencode;
 use strict;
 use warnings;
 
-require './rxvdef.pl';
+require 'rxvdef.pl';
 
 # encode an r-type instruction into a byte
 sub encode_r {

@@ -5,9 +5,9 @@ package rxvassemble;
 use strict;
 use warnings;
 
-require './rxvdef.pl';
-require './rxvparse.pl';
-require './rxvencode.pl';
+require 'rxvdef.pl';
+require 'rxvparse.pl';
+require 'rxvencode.pl';
 
 # strips comments, excess whitespace and empty lines, then returns an arrayref
 # to the resulting program lines
