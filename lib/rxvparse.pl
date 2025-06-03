@@ -41,9 +41,20 @@ sub parse_i {
             unless ($imm >= -8 && $imm <= 7);
     }
 
-    # ensure numeric immediate
-    die "fatal error: invalid immediate '$imm' in '$instr'\n"
-        unless Scalar::Util::looks_like_number($imm);
+    # parse hex and bin
+    unless (Scalar::Util::looks_like_number($imm)) {
+        if ($imm =~ /^0x[0-9a-fA-F]+$/) {
+            $imm = hex $imm;
+        }
+
+        elsif ($imm =~ /^0b[01]+$/) {
+            $imm = oct $imm;
+        }
+
+        else {
+            die "fatal error: failed to parse immediate '$imm' in '$instr'\n";
+        }
+    }
 
     # fail if outside of 4-bit range
     die "fatal error: immediate '$imm' outside of range [-8..15] in '$instr' ",
