@@ -32,15 +32,23 @@ sub parse_i {
         unless defined $op;
 
     # resolve label to offset
-    $imm = $label_map->{$imm} - $addr if defined $label_map->{$imm};
+    if (defined $label_map->{$imm}) {
+        $imm = $label_map->{$imm} - $addr;
+
+        # fail if offset is out of bounds (signed)
+        die "fatal error: jump offset out of range [-8..7] in '$instr' ",
+            "(outside of signed 4-bit range)\n"
+            unless ($imm >= -8 && $imm <= 7);
+    }
 
     # ensure numeric immediate
     die "fatal error: invalid immediate '$imm' in '$instr'\n"
         unless Scalar::Util::looks_like_number($imm);
 
-    # ensure within signed 4-bit range
-    die "fatal error: immediate '$imm' outside of range [-8..7] in '$instr'\n"
-        unless ($imm >= -8 && $imm <= 7);
+    # fail if outside of 4-bit range
+    die "fatal error: immediate '$imm' outside of range [-8..15] in '$instr' ",
+        "(outside of 4-bit range)\n"
+        unless ($imm >= -8 && $imm <= 15);
 
     return ($op, $imm);
 }
