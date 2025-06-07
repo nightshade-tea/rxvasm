@@ -37,16 +37,16 @@ our %instructions = (
              type => 'i',
              opcode => 0b0100
             },
-#   zr   => {
-#            type => 'i',
+#   ...  => {
+#            type => '.',
 #            opcode => 0b0101
 #           },
-#   li   => {
-#            type => 'i',
+#   ...  => {
+#            type => '.',
 #            opcode => 0b0110
 #           },
-#   lui  => {
-#            type => 'i',
+#   ...  => {
+#            type => '.',
 #            opcode => 0b0111
 #           },
     not  => {
