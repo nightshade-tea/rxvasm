@@ -20,6 +20,20 @@ sub parse_r {
     return ($op, $ra, $rb);
 }
 
+# parse an s-format instruction into lexical components
+sub parse_s {
+    my ($instr) = @_;
+
+    # extract mnemonic and register
+    my ($op, $rb) = $instr =~ /^([a-z]+)\s+r([0-3])$/;
+
+    # fail if format is wrong
+    die "fatal error: invalid s-format instruction '$instr'\n"
+        unless defined $op;
+
+    return ($op, $rb);
+}
+
 # parse an i-format instruction into lexical components
 sub parse_i {
     my ($instr, $label_map, $addr) = @_;
@@ -62,6 +76,20 @@ sub parse_i {
         unless ($imm >= -8 && $imm <= 15);
 
     return ($op, $imm);
+}
+
+# parse an n-format instruction into lexical components
+sub parse_n {
+    my ($instr) = @_;
+
+    # extract mnemonic
+    my ($op) = $instr =~ /^([a-z]+)$/;
+
+    # fail if format is wrong
+    die "fatal error: invalid n-format instruction '$instr'\n"
+        unless defined $op;
+
+    return $op;
 }
 
 # parse a bits type directive into its name and operands

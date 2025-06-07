@@ -45,10 +45,22 @@ sub assemble_instruction {
         return rxvencode::encode_r($op, $ra, $rb);
     }
 
+    # type 's'
+    elsif ($rxvdef::instructions{$op}{type} eq 's') {
+        my ($op, $rb) = rxvparse::parse_s($line);
+        return rxvencode::encode_s($op, $rb);
+    }
+
     # type 'i'
     elsif ($rxvdef::instructions{$op}{type} eq 'i') {
         my ($op, $imm) = rxvparse::parse_i($line, $label_map, $addr);
         return rxvencode::encode_i($op, $imm);
+    }
+
+    # type 'n'
+    elsif ($rxvdef::instructions{$op}{type} eq 'n') {
+        my $op = rxvparse::parse_n($line);
+        return rxvencode::encode_n($op);
     }
 
     # unhandled type
