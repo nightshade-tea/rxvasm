@@ -8,6 +8,12 @@ use warnings;
 # if you add more instructions, make sure that their names can be matched by
 # this regex pattern: /[a-z]+/
 
+# instruction types
+# r : register  : instr ra, rb  : opcode[7:4] | ra[3:2]  | rb[1:0]
+# s : single    : instr rb      : opcode[7:4] | 0[3:2]   | rb[1:0]
+# i : immediate : instr imm     : opcode[7:4] | imm[3:0]
+# n : none      : instr         : opcode[7:4] | 0[3:0]
+
 # instruction set definition
 # keys are mnemonics, values define type and opcode
 our %instructions = (
