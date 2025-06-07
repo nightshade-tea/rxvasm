@@ -15,52 +15,64 @@ our %instructions = (
              type => 'r',
              opcode => 0b0000
             },
-    ji   => {
+    brzi => {
              type => 'i',
              opcode => 0b0001
             },
-    ld   => {
+    jr   => {
              type => 'r',
              opcode => 0b0010
             },
-    st   => {
-             type => 'r',
+    ji   => {
+             type => 'i',
              opcode => 0b0011
             },
-    addi => {
-             type => 'i',
+    ld   => {
+             type => 'r',
              opcode => 0b0100
             },
-    not  => {
+    st   => {
              type => 'r',
-             opcode => 0b1000
+             opcode => 0b0101
             },
-    and  => {
-             type => 'r',
-             opcode => 0b1001
+    movh => {
+             type => 'i',
+             opcode => 0b0110
             },
-    or   => {
-             type => 'r',
-             opcode => 0b1010
-            },
-    xor  => {
-             type => 'r',
-             opcode => 0b1011
+    movl => {
+             type => 'i',
+             opcode => 0b0111
             },
     add  => {
              type => 'r',
-             opcode => 0b1100
+             opcode => 0b1000
             },
     sub  => {
              type => 'r',
-             opcode => 0b1101
+             opcode => 0b1001
+            },
+    and  => {
+             type => 'r',
+             opcode => 0b1010
+            },
+    or   => {
+             type => 'r',
+             opcode => 0b1011
+            },
+    not  => {
+             type => 'r',
+             opcode => 0b1100
             },
     slr  => {
              type => 'r',
-             opcode => 0b1110
+             opcode => 0b1101
             },
     srr  => {
              type => 'r',
+             opcode => 0b1110
+            },
+    nop  => {
+             type => 'n',
              opcode => 0b1111
             }
 );
