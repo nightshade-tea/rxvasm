@@ -21,64 +21,64 @@ our %instructions = (
              type => 'r',
              opcode => 0b0000
             },
-    brzi => {
+    ji   => {
              type => 'i',
              opcode => 0b0001
             },
-    jr   => {
-             type => 's',
-             opcode => 0b0010
-            },
-    ji   => {
-             type => 'i',
-             opcode => 0b0011
-            },
     ld   => {
              type => 'r',
-             opcode => 0b0100
+             opcode => 0b0010
             },
     st   => {
              type => 'r',
-             opcode => 0b0101
+             opcode => 0b0011
             },
-    movh => {
+    addi => {
              type => 'i',
-             opcode => 0b0110
+             opcode => 0b0100
             },
-    movl => {
-             type => 'i',
-             opcode => 0b0111
-            },
-    add  => {
+#   zr   => {
+#            type => 'i',
+#            opcode => 0b0101
+#           },
+#   li   => {
+#            type => 'i',
+#            opcode => 0b0110
+#           },
+#   lui  => {
+#            type => 'i',
+#            opcode => 0b0111
+#           },
+    not  => {
              type => 'r',
              opcode => 0b1000
             },
-    sub  => {
+    and  => {
              type => 'r',
              opcode => 0b1001
             },
-    and  => {
+    or   => {
              type => 'r',
              opcode => 0b1010
             },
-    or   => {
+    xor  => {
              type => 'r',
              opcode => 0b1011
             },
-    not  => {
+    add  => {
              type => 'r',
              opcode => 0b1100
             },
-    slr  => {
+    sub  => {
              type => 'r',
              opcode => 0b1101
             },
-    srr  => {
+    slr  => {
              type => 'r',
              opcode => 0b1110
             },
-    nop  => {
-             type => 'n',
+    srr  => {
+             type => 'r',
              opcode => 0b1111
             }
 );
