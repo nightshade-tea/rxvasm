@@ -30,6 +30,16 @@ sub encode_i {
     return $byte;
 }
 
+# encode an n-type instruction into a byte
+sub encode_n {
+    my ($op) = @_;
+
+    # opcode[7:4] | 0[3:0]
+    my $byte = ($rxvdef::instructions{$op}{opcode} << 4);
+
+    return $byte;
+}
+
 # encode a bits type directive into bytes
 sub encode_bits {
     my ($dir, $ops) = @_;
