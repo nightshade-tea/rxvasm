@@ -64,6 +64,20 @@ sub parse_i {
     return ($op, $imm);
 }
 
+# parse an n-format instruction into lexical components
+sub parse_n {
+    my ($instr) = @_;
+
+    # extract mnemonic
+    my ($op) = $instr =~ /^([a-z]+)$/;
+
+    # fail if format is wrong
+    die "fatal error: invalid n-format instruction '$instr'\n"
+        unless defined $op;
+
+    return $op;
+}
+
 # parse a bits type directive into its name and operands
 sub parse_bits {
     my ($line) = @_;
