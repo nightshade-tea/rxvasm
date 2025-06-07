@@ -20,7 +20,7 @@ our %instructions = (
              opcode => 0b0001
             },
     jr   => {
-             type => 'r',
+             type => 's',
              opcode => 0b0010
             },
     ji   => {

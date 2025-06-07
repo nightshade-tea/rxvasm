@@ -20,6 +20,20 @@ sub parse_r {
     return ($op, $ra, $rb);
 }
 
+# parse an s-format instruction into lexical components
+sub parse_s {
+    my ($instr) = @_;
+
+    # extract mnemonic and register
+    my ($op, $rb) = $instr =~ /^([a-z]+)\s+r([0-3])$/;
+
+    # fail if format is wrong
+    die "fatal error: invalid s-format instruction '$instr'\n"
+        unless defined $op;
+
+    return ($op, $rb);
+}
+
 # parse an i-format instruction into lexical components
 sub parse_i {
     my ($instr, $label_map, $addr) = @_;

@@ -17,6 +17,16 @@ sub encode_r {
     return $byte;
 }
 
+# encode an s-type instruction into a byte
+sub encode_s {
+    my ($op, $rb) = @_;
+
+    # opcode[7:4] | 0[3:2] | rb[1:0]
+    my $byte = ($rxvdef::instructions{$op}{opcode} << 4) | $rb;
+
+    return $byte;
+}
+
 # encode an i-type instruction into a byte
 sub encode_i {
     my ($op, $imm) = @_;
