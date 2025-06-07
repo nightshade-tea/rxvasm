@@ -51,6 +51,12 @@ sub assemble_instruction {
         return rxvencode::encode_i($op, $imm);
     }
 
+    # type 'n'
+    elsif ($rxvdef::instructions{$op}{type} eq 'n') {
+        my $op = rxvparse::parse_n($line);
+        return rxvencode::encode_n($op);
+    }
+
     # unhandled type
     die "fatal error: unhandled instruction type for '$op' in '$line'\n";
 }
